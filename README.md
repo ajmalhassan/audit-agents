@@ -1,23 +1,40 @@
 # audit-agents
 
-**Stop repeating the same agent failures.**
-
-A Claude Code skill that runs an 11-section PASS/WARN/FAIL audit on your agent definitions — prompt structure, tool discipline, anti-hallucination, security, and more. Gives the exact line and fix suggestion for every finding. Works with Claude Code, Cursor, Codex, and any markdown-based agent format.
-
-[![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+![Stars](https://img.shields.io/github/stars/ajmalhassan/audit-agents)
 [![Install with skills CLI](https://img.shields.io/badge/install-npx%20skills%20add-brightgreen)](https://skills.sh)
 
-## Install
+**Stop repeating the same agent failures.**
+
+Built out of frustration: I kept seeing the exact same issues (scope creep, hallucinations, weak robustness) across every new agent I wrote.
+
+So I turned my checklist into a **Claude Code skill** that runs an 11-section PASS/WARN/FAIL audit on your agent definitions — with **exact line numbers** and **fix suggestions**.
+
+Works with Claude Code, Cursor, Codex, and any markdown-based agent format.
+
+## Quick Install (recommended)
 
 ```bash
 npx skills add ajmalhassan/audit-agents
 ```
 
-Or clone directly:
+<details>
+<summary>Other install methods</summary>
+
+Clone into skills directory:
 
 ```bash
 git clone https://github.com/ajmalhassan/audit-agents.git ~/.claude/skills/audit-agents
 ```
+
+Or copy just the skill file:
+
+```bash
+mkdir -p ~/.claude/skills/audit-agents
+cp SKILL.md ~/.claude/skills/audit-agents/
+```
+
+</details>
 
 ## Why I built this
 
@@ -102,6 +119,12 @@ Audit my agent definitions
 Review the agents in this project for best practices
 ```
 
+## Tested With
+
+- Claude Code (primary)
+- Cursor
+- Any tool that reads markdown-based agent definitions
+
 ## Complementary Tools
 
 This skill does semantic, expert-level prompt review. For programmatic CI checks, pair with:
@@ -112,6 +135,10 @@ This skill does semantic, expert-level prompt review. For programmatic CI checks
 | [cclint](https://github.com/carlrannaberg/cclint) | Frontmatter validation, heading structure, dangerous commands |
 | [Agent Audit](https://github.com/HeadyZhang/agent-audit) | Security scanner, 53 rules mapped to OWASP Agentic Top 10 |
 | [Promptfoo](https://github.com/promptfoo/promptfoo) | Agent evaluation framework, red teaming |
+
+## Contributing
+
+PRs welcome — especially new checks, edge cases, or example audits.
 
 ## License
 
