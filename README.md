@@ -1,45 +1,29 @@
 # audit-agents
 
-Audit AI agent definitions for quality, safety, and effectiveness. Runs an 11-section checklist covering prompt structure, tool discipline, anti-hallucination guardrails, security, and more. Produces a structured PASS/WARN/FAIL report.
+**Stop repeating the same agent failures.**
 
-Works with any markdown-based agent format — Claude Code, Cursor, Codex, or custom.
+A Claude Code skill that runs an 11-section PASS/WARN/FAIL audit on your agent definitions — prompt structure, tool discipline, anti-hallucination, security, and more. Gives the exact line and fix suggestion for every finding. Works with Claude Code, Cursor, Codex, and any markdown-based agent format.
 
-## Installation
+[![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
+[![Install with skills CLI](https://img.shields.io/badge/install-npx%20skills%20add-brightgreen)](https://skills.sh)
 
-### Via skills CLI (recommended)
+## Install
 
 ```bash
 npx skills add ajmalhassan/audit-agents
 ```
 
-### Clone into skills directory
+Or clone directly:
 
 ```bash
-mkdir -p ~/.claude/skills
 git clone https://github.com/ajmalhassan/audit-agents.git ~/.claude/skills/audit-agents
 ```
 
-### Manual (just the skill file)
+## Why I built this
 
-```bash
-mkdir -p ~/.claude/skills/audit-agents
-cp SKILL.md ~/.claude/skills/audit-agents/
-```
+I keep writing new agents — different projects, different purposes. But the things that go wrong are always the same. Agent scope-creeps, hallucinates findings, declares "done" too early. I open the definition and find a gap I've already fixed in another agent.
 
-## Usage
-
-Invoke directly:
-
-```
-/audit-agents
-```
-
-Or describe what you need:
-
-```
-Audit my agent definitions
-Review the agents in this project for best practices
-```
+There's no quick way to check if a definition is solid before you start using it. You run the agent, watch it break, fix the definition, repeat. So I wrote down the criteria I keep checking for against industry best practices and packaged it as a skill. I run it after every revision now to see if the score improves.
 
 ## What It Checks
 
@@ -61,28 +45,61 @@ Plus cross-agent checks for scope overlap, handoff coherence, and defense-in-dep
 
 ## Example Output
 
+Real audit of a component-reviewer agent (60/63 checks passed):
+
 ```
-## Agent Audit: component-builder
+Agent Audit: component-reviewer
 
-### Summary
-- Checks: 52/58
-- Warnings: 4
-- Failures: 2
+Summary
+- Checks: 60/63
+- Warnings: 3
+- Failures: 0
 
-### Failures (must fix)
-1. **[Frontmatter]** tools not explicitly whitelisted — grants all tools by default
-   > (tools field omitted from frontmatter)
-   Fix: Add explicit tools whitelist matching what the agent body needs
+Warnings (suggested improvements)
+1. [Prompt Structure — Thin Agent] 340 lines (2.3× guideline). The 7 category
+   contracts (lines 185–237) could be a companion file loaded based on the
+   component's detected category.
+   Rationale: Reduces main body by ~50 lines and limits attention dilution
+   for mid-capability model.
 
-### Warnings
-1. **[Scope]** No "does NOT do" section — scope only defined positively
-   Rationale: Negative scope prevents misrouting by the orchestrator
+2. [Robustness] No explicit instruction for what to do if the component
+   directory doesn't exist (user provides wrong name).
+   Rationale: The reviewer reads packages/react/src/components/{Name}/index.tsx
+   — if it's missing, behavior is undefined.
 
-## Fleet Summary
-| Agent            | Model  | Tools | Pass | Warn | Fail |
-|------------------|--------|-------|------|------|------|
-| component-builder | opus  | 10    | 52   | 4    | 2    |
-| code-reviewer     | sonnet | 4    | 55   | 3    | 0    |
+3. [Model-Capability] 80+ checklist items may exceed mid-capability model's
+   attention span for a single pass.
+   Rationale: Sonnet works best with concise, outcome-oriented rules. Consider
+   priority-ordering items or splitting into focused passes.
+
+Passes
+- [Frontmatter] name, description, tools (8), model (sonnet) all correct;
+  Judge archetype (no Write/Edit)
+- [Scope] Purpose clear; known codebase-wide gaps called out; layout
+  components explicitly excluded; exit = structured report
+- [Anti-Hallucination] "re-read the actual file" before FAILs; UNDETERMINED
+  escape hatch; evidence requires 3-question reasoning
+- [Output Format] Severity levels defined; structured report template with
+  Failures/Warnings/Passes
+- [Tool Usage] All 8 tools have concrete use cases; Bash constrained to
+  grep, pnpm run check, pnpm run test
+- [Reusability] Generic placeholders; category-based conditional contracts
+- [Security] No secrets, scoped to packages/, no unsafe commands
+```
+
+## Usage
+
+Invoke directly:
+
+```
+/audit-agents
+```
+
+Or describe what you need:
+
+```
+Audit my agent definitions
+Review the agents in this project for best practices
 ```
 
 ## Complementary Tools
